@@ -8,7 +8,6 @@ import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
-    forwardRef(() => [UsersModule]),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: {
@@ -16,7 +15,7 @@ import { UsersModule } from '../users/users.module';
       },
     }),
   ],
-  providers: [AuthService, UsersService],
+  providers: [AuthService],
   exports: [AuthService],
   controllers: [AuthController],
 })

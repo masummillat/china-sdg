@@ -10,8 +10,7 @@ const bcrypt = require('bcrypt');
 @Injectable()
 export class AuthService {
   constructor(
-    private jwtService: JwtService,
-    private usersService: UsersService,
+    private jwtService: JwtService, // private usersService: UsersService,
   ) {}
   hashPassword(password: string): Observable<string> {
     return from<string>(bcrypt.hash(password, 12));
@@ -26,37 +25,37 @@ export class AuthService {
   }
 
   login(user: UserDto): Observable<any> {
-    console.log(user);
-    return this.validateUser(user.email, user.password).pipe(
-      switchMap((user: UserDto) => {
-        if (user) {
-          return this.generateJwt(user).pipe(
-            map((jwt) => {
-              return {
-                access_token: jwt,
-              };
-            }),
-          );
-        }
-        return from('wrong username password');
-      }),
-    );
+    // console.log(user);
+    // return this.validateUser(user.email, user.password).pipe(
+    //   switchMap((user: UserDto) => {
+    if (user) {
+      return this.generateJwt(user).pipe(
+        map((jwt) => {
+          return {
+            access_token: jwt,
+          };
+        }),
+      );
+    }
+    return from('wrong username password');
+    //   }),
+    // );
   }
 
-  validateUser(email: string, password: string): Observable<UserDto | null> {
-    return this.usersService.findByMail(email).pipe(
-      switchMap((user: UserDto) =>
-        this.comparePassword(password, user.password).pipe(
-          map((match) => {
-            if (match) {
-              const { password, ...result } = user;
-              return result;
-            } else {
-              throw Error;
-            }
-          }),
-        ),
-      ),
-    );
-  }
+  // validateUser(email: string, password: string): Observable<UserDto | null> {
+  //   return this.usersService.findByMail(email).pipe(
+  //     switchMap((user: UserDto) =>
+  //       this.comparePassword(password, user.password).pipe(
+  //         map((match) => {
+  //           if (match) {
+  //             const { password, ...result } = user;
+  //             return result;
+  //           } else {
+  //             throw Error;
+  //           }
+  //         }),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
