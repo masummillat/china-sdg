@@ -1,9 +1,19 @@
+import { BlogEntry } from '../../blog/model/blog-entry.interface';
+
 export interface UserDto {
-  id?: string;
+  id?: number;
+  name?: string;
   username?: string;
   email?: string;
   password?: string;
+  role?: UserRole;
+  profileImage?: string;
+  blogEntries?: BlogEntry[];
 }
-export interface UserUpdateDto {
-  username: string;
+
+export enum UserRole {
+  ADMIN = 'admin',
+  CHIEFEDITOR = 'chiefeditor',
+  EDITOR = 'editor',
+  USER = 'user',
 }

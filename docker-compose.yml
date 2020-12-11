@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+
+  db:
+    container_name: chinasdg_db
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: 'chinasdg'
+      MYSQL_USER: 'chinasdg'
+      MYSQL_PASSWORD: 'chinasdg'
+      MYSQL_DATABASE: 'chinasdg'
+    ports:
+      - 3306:3306
+
+  adminer:
+    container_name: chinasdg_adminer
+    image: adminer
+    ports:
+      - 8080:8080

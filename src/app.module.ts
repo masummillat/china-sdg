@@ -7,9 +7,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/user.entity';
 import { Connection } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
+import { BlogController } from './blog/blog.controller';
+import { BlogService } from './blog/service/blog.service';
+import { BlogModule } from './blog/blog.module';
+import { BlogEntryEntity } from './blog/model/blog-entry.entity';
 
 @Module({
   imports: [
+    BlogModule,
     UsersModule,
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -20,7 +25,7 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [UserEntity],
+      entities: [UserEntity, BlogEntryEntity],
       synchronize: true,
       autoLoadEntities: true,
     }),
