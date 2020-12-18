@@ -30,9 +30,9 @@ export class UsersController {
     return this.usersService.findOne(params.id);
   }
 
-  // @Public()
-  @Roles(UserRole.USER)
-  @UseGuards(RolesGuard)
+  @Public()
+  // @Roles(UserRole.USER)
+  // @UseGuards(RolesGuard)
   @Get()
   findAll(): Observable<UserDto[]> {
     return this.usersService.findAll();

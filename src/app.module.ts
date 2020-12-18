@@ -11,6 +11,7 @@ import { BlogController } from './blog/blog.controller';
 import { BlogService } from './blog/service/blog.service';
 import { BlogModule } from './blog/blog.module';
 import { BlogEntryEntity } from './blog/model/blog-entry.entity';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { BlogEntryEntity } from './blog/model/blog-entry.entity';
       synchronize: true,
       autoLoadEntities: true,
     }),
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

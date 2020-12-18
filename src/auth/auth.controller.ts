@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { UserDto } from '../users/dto/user.dto';
-import { from, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UserEntity } from '../users/user.entity';

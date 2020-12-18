@@ -2,10 +2,13 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from '../../users/user.entity';
+import { CategoryEntryEntity } from '../../categories/model/category-entry.entity';
 
 @Entity('blog_entry')
 export class BlogEntryEntity {
@@ -21,7 +24,7 @@ export class BlogEntryEntity {
   @Column({ default: '' })
   description: string;
 
-  @Column({ default: '' })
+  @Column({ type: 'longtext' })
   body: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
@@ -39,7 +42,7 @@ export class BlogEntryEntity {
   likes: number;
 
   @Column({ nullable: true })
-  headerImage: string;
+  featuredImg: string;
 
   @Column({ nullable: true })
   publishedDate: Date;
@@ -49,4 +52,8 @@ export class BlogEntryEntity {
 
   @ManyToOne((type) => UserEntity, (user) => user.blogEntries)
   author: UserEntity;
+
+  @ManyToMany(() => CategoryEntryEntity)
+  @JoinTable()
+  CategoryEntries: CategoryEntryEntity[];
 }

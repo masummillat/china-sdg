@@ -8,21 +8,16 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private usersService: UsersService) {
-    super();
+    super({ usernameField: 'email' });
   }
 
-  validate(username: string, password: string): Observable<any> {
-    const user = this.usersService.validateUser(username, password);
-    console.log('====================');
-    console.log(user);
+  validate(email: string, password: string): Observable<any> {
+    const user = this.usersService.validateUser(email, password);
     if (!user) {
       throw new UnauthorizedException();
     }
     return user.pipe(
       switchMap((user) => {
-        console.group('found user');
-        console.log(of(user));
-        console.groupEnd();
         return of(user);
       }),
     );

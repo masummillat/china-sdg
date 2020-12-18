@@ -29,11 +29,12 @@ export class UsersService {
     return from(this.jwtService.signAsync(user));
   }
   validateUser(email: string, password: string): Observable<any> {
+    console.log(email)
     return from(
       this.usersRepository.findOne(
         { email },
         {
-          select: ['id', 'password', 'username', 'email', 'name', 'role'],
+          select: ['id', 'password', 'email', 'name', 'role'],
         },
       ),
     ).pipe(
@@ -63,7 +64,7 @@ export class UsersService {
       switchMap((passwordHash: string) => {
         const newUser = new UserEntity();
         newUser.name = user.name;
-        newUser.username = user.username;
+        // newUser.username = user.username;
         newUser.email = user.email;
         newUser.password = passwordHash;
 

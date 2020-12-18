@@ -9,7 +9,7 @@ export interface BlogEntry {
   updatedAt?: Date;
   likes?: number;
   author?: UserDto;
-  headerImage?: string;
+  featuredImg?: string;
   publishedDate?: Date;
   isPublished?: boolean;
 }
