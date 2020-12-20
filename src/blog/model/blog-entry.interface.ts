@@ -1,4 +1,5 @@
 import { UserDto } from '../../users/dto/user.dto';
+import { CategoryEntry } from '../../categories/model/category.entry';
 export interface BlogEntry {
   id?: number;
   title?: string;
@@ -12,4 +13,5 @@ export interface BlogEntry {
   featuredImg?: string;
   publishedDate?: Date;
   isPublished?: boolean;
+  categories?: CategoryEntry[];
 }

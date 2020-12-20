@@ -5,9 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogEntryEntity } from './model/blog-entry.entity';
 
 import { UsersModule } from '../users/users.module';
+import { CategoriesModule } from '../categories/categories.module';
+import { CategoriesService } from '../categories/categories.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BlogEntryEntity]), UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([BlogEntryEntity]),
+    UsersModule,
+    CategoriesModule,
+  ],
   providers: [BlogService],
   controllers: [BlogController],
 })

@@ -8,6 +8,7 @@ import { BlogEntry } from '../model/blog-entry.interface';
 import { from, Observable, of } from 'rxjs';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { switchMap } from 'rxjs/operators';
+import { CategoriesService } from '../../categories/categories.service';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const slugify = require('slugify');
@@ -17,6 +18,7 @@ export class BlogService {
     @InjectRepository(BlogEntryEntity)
     private readonly blogRepository: Repository<BlogEntryEntity>,
     private usersService: UsersService,
+    private categoriesService: CategoriesService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -30,7 +32,12 @@ export class BlogService {
     );
   }
   findOne(id: number): Observable<BlogEntry> {
-    return from(this.blogRepository.findOne({ id }, { relations: ['author'] }));
+    return from(
+      this.blogRepository.findOne(
+        { id },
+        { relations: ['author', 'categories'] },
+      ),
+    );
   }
   updateOne(id, blogEntry): Observable<BlogEntry> {
     return this.generateSlug(blogEntry.title).pipe(
@@ -46,7 +53,9 @@ export class BlogService {
     return from(this.blogRepository.delete(id));
   }
   findAll(): Observable<BlogEntry[]> {
-    return from(this.blogRepository.find({ relations: ['author'] }));
+    return from(
+      this.blogRepository.find({ relations: ['author', 'categories'] }),
+    );
   }
 
   generateSlug(title: string): Observable<string> {

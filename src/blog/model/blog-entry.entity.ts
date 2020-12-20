@@ -4,13 +4,14 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
+  ManyToOne, OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from '../../users/user.entity';
 import { CategoryEntryEntity } from '../../categories/model/category-entry.entity';
+import { CategoryEntry } from '../../categories/model/category.entry';
 
-@Entity('blog_entry')
+@Entity('blogs')
 export class BlogEntryEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -53,7 +54,9 @@ export class BlogEntryEntity {
   @ManyToOne((type) => UserEntity, (user) => user.blogEntries)
   author: UserEntity;
 
-  @ManyToMany(() => CategoryEntryEntity)
+  @ManyToMany(() => CategoryEntryEntity,{
+    cascade: true,
+  })
   @JoinTable()
-  CategoryEntries: CategoryEntryEntity[];
+  categories: CategoryEntry[];
 }
