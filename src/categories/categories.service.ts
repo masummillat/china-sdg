@@ -22,7 +22,7 @@ export class CategoriesService {
   }
 
   findAll(): Observable<CategoryEntry[]> {
-    return from(this.categoriesRepository.find({ relations: ['blogEntries'] }));
+    return from(this.categoriesRepository.find());
   }
   updateOne(
     id: number,

@@ -5,6 +5,8 @@ export interface UserDto {
   name?: string;
   email?: string;
   password?: string;
+  bio?: string;
+  occupation?: string;
   role?: UserRole;
   profileImage?: string;
   blogEntries?: BlogEntry[];
@@ -12,7 +14,7 @@ export interface UserDto {
 
 export enum UserRole {
   ADMIN = 'admin',
-  CHIEFEDITOR = 'chiefeditor',
-  EDITOR = 'editor',
+  AUTHOR = 'AUTHOR',
   USER = 'user',
+  MANAGER = 'manager',
 }

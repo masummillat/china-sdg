@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { from, Observable, of, throwError } from 'rxjs';
-import { UserDto } from './dto/user.dto';
+import { UserDto, UserRole } from './dto/user.dto';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { JwtService } from '@nestjs/jwt';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -22,14 +22,14 @@ export class UsersService {
     return from<string>(bcrypt.hash(password, 12));
   }
   comparePassword(newPassword: string, passwordHash: string): Observable<any> {
-    return of<any | boolean>(bcrypt.compare(newPassword, passwordHash));
+    console.log(bcrypt.compare(newPassword, passwordHash));
+    return from<any | boolean>(bcrypt.compare(newPassword, passwordHash));
   }
 
   generateJwt(user: UserDto): Observable<string> {
     return from(this.jwtService.signAsync(user));
   }
   validateUser(email: string, password: string): Observable<any> {
-    console.log(email)
     return from(
       this.usersRepository.findOne(
         { email },
@@ -43,17 +43,23 @@ export class UsersService {
           if (user) {
             return this.comparePassword(password, user.password).pipe(
               map((match: boolean) => {
+                console.log('match => ' + match);
                 if (match) {
                   const { password, ...result } = user;
                   return result;
                 } else {
-                  throw Error;
+                  throw new HttpException(
+                    'Wrong username password',
+                    HttpStatus.NOT_ACCEPTABLE,
+                  );
                 }
               }),
-              catchError((err) => throwError(err)),
             );
           } else {
-            return of(undefined);
+            throw new HttpException(
+              'Wrong username password',
+              HttpStatus.NOT_ACCEPTABLE,
+            );
           }
         },
       ),
@@ -67,6 +73,8 @@ export class UsersService {
         // newUser.username = user.username;
         newUser.email = user.email;
         newUser.password = passwordHash;
+        // newUser.role = UserRole.ADMIN;
+        newUser.bio = '';
 
         return from(this.usersRepository.save(newUser)).pipe(
           map((user: UserDto) => {
@@ -81,7 +89,7 @@ export class UsersService {
     );
   }
   findAll(): Observable<UserDto[]> {
-    return from(this.usersRepository.find()).pipe(
+    return from(this.usersRepository.find({ relations: ['blogEntries'] })).pipe(
       map((users: UserDto[]) => {
         users.forEach(function (v) {
           delete v.password;
@@ -90,8 +98,11 @@ export class UsersService {
       }),
     );
   }
-  findOne(id: string): Observable<UserDto | HttpException> {
-    return from(this.usersRepository.findOne(id)).pipe(
+
+  findOne(id: number): Observable<UserDto | HttpException> {
+    return from(
+      this.usersRepository.findOne(id, { relations: ['blogEntries'] }),
+    ).pipe(
       map((user: UserDto) => {
         if (user) {
           const { password, ...result } = user;
@@ -114,7 +125,7 @@ export class UsersService {
     delete user.email;
     delete user.password;
     return from(this.usersRepository.update(id, user)).pipe(
-      switchMap(() => this.findOne(id)),
+      switchMap(() => this.findOne(parseInt(id))),
     );
   }
   deleteOne(id: string): Observable<any> {

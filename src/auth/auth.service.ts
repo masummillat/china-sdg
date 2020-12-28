@@ -19,12 +19,6 @@ export class AuthService {
             }),
           );
         }
-        return of(
-          new HttpException(
-            'wrong username password',
-            HttpStatus.NOT_ACCEPTABLE,
-          ),
-        );
       }),
     );
   }
