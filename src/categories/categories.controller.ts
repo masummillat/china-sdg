@@ -6,7 +6,8 @@ import {
   Param,
   Post,
   Put,
-  Request, UseGuards,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryEntry } from './model/category.entry';
 import { Observable, of } from 'rxjs';
