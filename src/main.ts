@@ -11,7 +11,7 @@ async function bootstrap() {
     .setTitle('JinPost')
     .setDescription('The Jinpost API description')
     .setVersion('1.0')
-    .addTag('cats')
+    .addTag('Jinpost')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);

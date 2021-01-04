@@ -14,7 +14,7 @@ import { JwtAuthGuard, Public } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -37,6 +37,7 @@ export class UsersController {
   findAll(): Observable<UserDto[]> {
     return this.usersService.findAll();
   }
+
   @Put(':id')
   updateOne(@Param() params, @Body() user): Observable<UserDto> {
     return this.usersService.updateOne(params.id, user);

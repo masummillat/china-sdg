@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-
+import jwt_decode from 'jwt-decode';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -77,12 +77,13 @@ export class UsersService {
         newUser.bio = '';
 
         return from(this.usersRepository.save(newUser)).pipe(
-          map((user: UserDto) => {
-            const { password, ...result } = user;
-            return result;
-          }),
-          catchError((err) =>
-            of(new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE)),
+          map(
+            (user: UserDto) => {
+              console.log(user);
+              const { password, ...result } = user;
+              return result;
+            },
+            catchError((err) => throwError(err)),
           ),
         );
       }),
@@ -126,6 +127,9 @@ export class UsersService {
     delete user.password;
     return from(this.usersRepository.update(id, user)).pipe(
       switchMap(() => this.findOne(parseInt(id))),
+      catchError((err) => {
+        throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
+      }),
     );
   }
   deleteOne(id: string): Observable<any> {
@@ -133,5 +137,48 @@ export class UsersService {
   }
   findByMail(email: string): Observable<UserDto> {
     return from(this.usersRepository.findOne({ email }));
+  }
+
+  changePassword(
+    body: { password: string; newPassword: string; confirmPassword: string },
+    id: number,
+    accessToken: string,
+  ): Observable<any> {
+    const decoded = jwt_decode(accessToken);
+    console.log(decoded);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const { email } = decoded;
+    return this.validateUser(email, body.password).pipe(
+      switchMap((user: UserDto) => {
+        if (user) {
+          return this.hashPassword(body.newPassword).pipe(
+            switchMap((hashPassword: string) => {
+              const newUser = new UserEntity();
+              newUser.password = hashPassword;
+              return from(this.usersRepository.update(id, newUser)).pipe(
+                switchMap(() => {
+                  return of({
+                    message: 'Successfully updated',
+                  });
+                }),
+              );
+            }),
+          );
+        } else {
+          throw new HttpException(
+            'Wrong password or something else',
+            HttpStatus.NOT_ACCEPTABLE,
+          );
+        }
+      }),
+    );
+    // return this.validateUser(body.email, body.password).pipe(
+    //   map((user: UserDto) => {
+    //     console.log(user);
+    //     return user;
+    //   }),
+    // );
   }
 }

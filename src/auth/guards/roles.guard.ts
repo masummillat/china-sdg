@@ -13,8 +13,7 @@ import { ROLES_KEY } from '../decorator/roles.decorator';
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
-    private reflector: Reflector,
-    private usersService: UsersService,
+    private reflector: Reflector, // private usersService: UsersService,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -22,13 +21,13 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
-    console.log(requiredRoles)
+    console.log(requiredRoles);
     if (!requiredRoles) {
       return true;
     }
     const { user } = context.switchToHttp().getRequest();
-    console.log(user.role)
-    console.log(requiredRoles.some((role) => user.role?.includes(role)))
+    console.log(user.role);
+    console.log(requiredRoles.some((role) => user.role?.includes(role)));
     return requiredRoles.some((role) => user.role?.includes(role));
   }
 }
