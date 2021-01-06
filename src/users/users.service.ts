@@ -90,7 +90,7 @@ export class UsersService {
     );
   }
   findAll(): Observable<UserDto[]> {
-    return from(this.usersRepository.find({ relations: ['blogEntries'] })).pipe(
+    return from(this.usersRepository.find({ relations: ['blogs'] })).pipe(
       map((users: UserDto[]) => {
         users.forEach(function (v) {
           delete v.password;
@@ -102,7 +102,7 @@ export class UsersService {
 
   findOne(id: number): Observable<UserDto | HttpException> {
     return from(
-      this.usersRepository.findOne(id, { relations: ['blogEntries'] }),
+      this.usersRepository.findOne(id, { relations: ['blogs'] }),
     ).pipe(
       map((user: UserDto) => {
         if (user) {

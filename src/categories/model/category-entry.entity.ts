@@ -10,7 +10,7 @@ import {
 import { BlogEntryEntity } from '../../blog/model/blog-entry.entity';
 import { BlogEntry } from '../../blog/model/blog-entry.interface';
 
-@Entity('categories')
+@Entity('category')
 export class CategoryEntryEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,7 +18,9 @@ export class CategoryEntryEntity {
   @Column()
   name: string;
 
-  @OneToMany((type) => BlogEntryEntity, (blogEntry) => blogEntry.id)
-  @JoinTable()
-  blogEntries: BlogEntry[];
+  @ManyToMany(
+    () => BlogEntryEntity,
+    (blogEntry: BlogEntry) => blogEntry.categories,
+  )
+  public blogs: BlogEntry[];
 }

@@ -65,6 +65,7 @@ export class BlogController {
     @Param('id') id: string,
     @Body() blogEntry: BlogEntry,
   ): Observable<BlogEntry> {
+    console.log(blogEntry)
     return this.blogService.updateOne(id, blogEntry);
   }
 

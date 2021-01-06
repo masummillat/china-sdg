@@ -38,7 +38,7 @@ export class UserEntity {
     (type) => BlogEntryEntity,
     (blogEntryEntity) => blogEntryEntity.author,
   )
-  blogEntries: BlogEntryEntity[];
+  blogs: BlogEntryEntity[];
 
   @BeforeInsert()
   emailToLowerCase() {

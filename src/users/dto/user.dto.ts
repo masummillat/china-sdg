@@ -9,7 +9,7 @@ export interface UserDto {
   occupation?: string;
   role?: UserRole;
   profileImage?: string;
-  blogEntries?: BlogEntry[];
+  blogs?: BlogEntry[];
 }
 
 export enum UserRole {
