@@ -46,23 +46,24 @@ export class BlogEntryEntity {
   @Column({ nullable: true })
   featuredImg: string;
 
+  @Column('simple-array', { default: null })
+  tags: string[];
+
   @Column({ nullable: true })
   publishedDate: Date;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false, default: false })
   isPublished: boolean;
 
   @ManyToOne((type) => UserEntity, (user: UserDto) => user.blogs)
   author: UserEntity;
 
-  // @ManyToMany(() => CategoryEntryEntity, {
-  //   cascade: true,
-  // })
-  // @JoinTable()
-  // categories: CategoryEntry[];
   @ManyToMany(
     () => CategoryEntryEntity,
     (category: CategoryEntry) => category.blogs,
+    {
+      cascade: true,
+    },
   )
   @JoinTable()
   categories: CategoryEntry[];

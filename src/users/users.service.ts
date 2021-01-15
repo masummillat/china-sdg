@@ -139,6 +139,22 @@ export class UsersService {
     return from(this.usersRepository.findOne({ email }));
   }
 
+  findByDomain(domain: string): Observable<UserDto> {
+    return from(
+      this.usersRepository.findOne({ domain }, { relations: ['blogs'] }),
+    ).pipe(
+      switchMap((domain: UserDto) => {
+        if (domain) {
+          return of(domain);
+        }
+        throw new HttpException('not found', HttpStatus.NOT_FOUND);
+      }),
+      catchError((err) => {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }),
+    );
+  }
+
   changePassword(
     body: { password: string; newPassword: string; confirmPassword: string },
     id: number,

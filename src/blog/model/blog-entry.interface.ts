@@ -13,5 +13,6 @@ export interface BlogEntry {
   featuredImg?: string;
   publishedDate?: Date;
   isPublished?: boolean;
+  tags?: string[];
   categories?: CategoryEntry[];
 }

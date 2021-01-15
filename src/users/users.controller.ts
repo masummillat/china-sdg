@@ -25,10 +25,16 @@ export class UsersController {
   // }
 
   @Public()
+  @Get('domain/:domain')
+  findByDomain(@Param() params) {
+    return this.usersService.findByDomain(params.domain);
+  }
+  @Public()
   @Get(':id')
   findOne(@Param() params) {
     return this.usersService.findOne(params.id);
   }
+
 
   @Public()
   // @Roles(UserRole.USER)

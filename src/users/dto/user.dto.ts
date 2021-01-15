@@ -3,6 +3,7 @@ import { BlogEntry } from '../../blog/model/blog-entry.interface';
 export interface UserDto {
   id?: number;
   name?: string;
+  domain?: string;
   email?: string;
   password?: string;
   bio?: string;
@@ -14,7 +15,7 @@ export interface UserDto {
 
 export enum UserRole {
   ADMIN = 'admin',
-  AUTHOR = 'AUTHOR',
+  AUTHOR = 'author',
   USER = 'user',
   MANAGER = 'manager',
 }

@@ -40,17 +40,16 @@ export class BlogService {
     );
   }
   updateOne(id, blogEntry): Observable<BlogEntry> {
-    console.log(blogEntry)
-    // if (!blogEntry.title) {
-    //   return from(this.blogRepository.update(id, blogEntry)).pipe(
-    //     switchMap(() => this.findOne(id)),
-    //   );
-    // }
+    if (!blogEntry.title) {
+      return from(this.blogRepository.update(id, blogEntry)).pipe(
+        switchMap(() => this.findOne(id)),
+      );
+    }
     return this.generateSlug(blogEntry.title).pipe(
       switchMap((slug: string) => {
         blogEntry.slug = slug;
-        console.log(blogEntry)
-        return from(this.blogRepository.update(id, blogEntry)).pipe(
+
+        return from(this.blogRepository.save(blogEntry)).pipe(
           switchMap(() => this.findOne(id)),
         );
       }),

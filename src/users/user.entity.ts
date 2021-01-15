@@ -16,6 +16,9 @@ export class UserEntity {
   @Column()
   name: string;
 
+  @Column({ unique: true, nullable: false, default: '' })
+  domain: string;
+
   @Column({ unique: true })
   email: string;
 
@@ -43,5 +46,10 @@ export class UserEntity {
   @BeforeInsert()
   emailToLowerCase() {
     this.email = this.email.toLowerCase();
+  }
+
+  @BeforeInsert()
+  createDomain() {
+    this.domain = this.name.toLowerCase();
   }
 }
