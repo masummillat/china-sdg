@@ -1,3 +1,8 @@
+import {
+  Pagination,
+  IPaginationOptions,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { CategoryEntryEntity } from './model/category-entry.entity';
@@ -18,11 +23,17 @@ export class CategoriesService {
   }
 
   findOne(id: number): Observable<CategoryEntry> {
-    return from(this.categoriesRepository.findOne(id));
+    return from(
+      this.categoriesRepository.findOne(id, { relations: ['blogs'] }),
+    );
   }
 
-  findAll(): Observable<CategoryEntry[]> {
-    return from(this.categoriesRepository.find({ relations: ['blogs'] }));
+  findAll(options: IPaginationOptions): Observable<Pagination<CategoryEntry>> {
+    return from(
+      paginate<CategoryEntry>(this.categoriesRepository, options, {
+        relations: ['blogs'],
+      }),
+    );
   }
   updateOne(
     id: number,

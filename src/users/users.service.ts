@@ -1,3 +1,5 @@
+import { Roles } from './../auth/decorator/roles.decorator';
+import { AuthorRequestEntity } from './model/authorRequest.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import jwt_decode from 'jwt-decode';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +9,13 @@ import { from, Observable, of, throwError } from 'rxjs';
 import { UserDto, UserRole } from './dto/user.dto';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { JwtService } from '@nestjs/jwt';
+import {
+  paginate,
+  Pagination,
+  IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
+import { Public } from 'src/auth/guards/jwt-auth.guard';
+import { AuthorRequest } from './dto/authorReques.interface';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bcrypt = require('bcrypt');
 
@@ -15,6 +24,8 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    @InjectRepository(AuthorRequestEntity)
+    private authorRequestRepository: Repository<AuthorRequestEntity>,
     private jwtService: JwtService,
   ) {}
 
@@ -89,13 +100,17 @@ export class UsersService {
       }),
     );
   }
-  findAll(): Observable<UserDto[]> {
-    return from(this.usersRepository.find({ relations: ['blogs'] })).pipe(
-      map((users: UserDto[]) => {
-        users.forEach(function (v) {
+  findAll(options: IPaginationOptions): Observable<Pagination<UserDto>> {
+    return from(
+      paginate<UserDto>(this.usersRepository, options, {
+        relations: ['blogs'],
+      }),
+    ).pipe(
+      map((usersPageable: Pagination<UserDto>) => {
+        usersPageable.items.forEach(function (v) {
           delete v.password;
         });
-        return users;
+        return usersPageable;
       }),
     );
   }
@@ -122,11 +137,24 @@ export class UsersService {
     );
   }
 
-  updateOne(id: string, user: UserDto): Observable<any> {
+  updateOne(id: number, user: UserDto): Observable<any> {
     delete user.email;
     delete user.password;
+    delete user.role;
     return from(this.usersRepository.update(id, user)).pipe(
-      switchMap(() => this.findOne(parseInt(id))),
+      switchMap(() => this.findOne(id)),
+      catchError((err) => {
+        throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
+      }),
+    );
+  }
+
+  updateRoleOfUser(id: number, user: UserDto): Observable<any> {
+    const tmpUser = new UserEntity();
+    tmpUser.role = user.role;
+    console.log(tmpUser);
+    return from(this.usersRepository.update(id, tmpUser)).pipe(
+      switchMap(() => this.findOne(id)),
       catchError((err) => {
         throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
       }),
@@ -196,5 +224,62 @@ export class UsersService {
     //     return user;
     //   }),
     // );
+  }
+
+  getAuthorRequest(id: number): Observable<AuthorRequest> {
+    return from(this.authorRequestRepository.findOne(id));
+  }
+  getAuthorRequests(): Observable<any> {
+    return from(
+      this.authorRequestRepository.find({
+        where: { read: false },
+        relations: ['author'],
+      }),
+    );
+  }
+  createAuthorRequest(
+    user: UserDto,
+    authorRequest: AuthorRequest,
+  ): Observable<any> {
+    authorRequest.author = user;
+    delete authorRequest.read;
+    return from(this.authorRequestRepository.save(authorRequest)).pipe(
+      switchMap((value) => of(value)),
+      catchError((err) => {
+        throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
+      }),
+    );
+  }
+
+  updateAuthorRequest(id, authorRequest: AuthorRequest): Observable<any> {
+    return from(
+      this.authorRequestRepository.findOne(id, { relations: ['author'] }),
+    ).pipe(
+      switchMap((req: AuthorRequest) => {
+        console.log(req);
+        const newUser = new UserEntity();
+        newUser.role = UserRole.AUTHOR;
+        console.log(newUser);
+        return from(this.updateRoleOfUser(req.author.id, newUser)).pipe(
+          switchMap(() => {
+            authorRequest.read = true;
+            return from(
+              this.authorRequestRepository.update(id, authorRequest),
+            ).pipe(switchMap(() => this.getAuthorRequest(id)));
+          }),
+        );
+      }),
+    );
+  }
+
+  deleteAuthorRequest(id): Observable<any> {
+    return from(this.authorRequestRepository.delete(id)).pipe(
+      switchMap(() =>
+        of({
+          message: 'Successfylly deleted',
+          status: HttpStatus.OK,
+        }),
+      ),
+    );
   }
 }

@@ -1,3 +1,4 @@
+import { AuthorRequestEntity } from './users/model/authorRequest.entity';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -26,7 +27,7 @@ import { CategoriesModule } from './categories/categories.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [UserEntity, BlogEntryEntity],
+      entities: [UserEntity, BlogEntryEntity, AuthorRequestEntity],
       synchronize: true,
       autoLoadEntities: true,
     }),

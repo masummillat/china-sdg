@@ -1,3 +1,4 @@
+import { Pagination } from 'nestjs-typeorm-paginate';
 import {
   Body,
   Controller,
@@ -8,6 +9,7 @@ import {
   Put,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CategoryEntry } from './model/category.entry';
 import { Observable, of } from 'rxjs';
@@ -39,8 +41,16 @@ export class CategoriesController {
 
   @Public()
   @Get()
-  findAll(): Observable<CategoryEntry[]> {
-    return this.categoriesService.findAll();
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Observable<Pagination<CategoryEntry>> {
+    // limit = limit > 100 ? 100 : limit;
+    return this.categoriesService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+      route: `${process.env.BASE_URL}/categories`,
+    });
   }
 
   @Roles(UserRole.ADMIN)

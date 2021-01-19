@@ -11,6 +11,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { BlogService } from './service/blog.service';
 import { BlogEntry } from './model/blog-entry.interface';
@@ -26,6 +27,7 @@ import { UserIsAuthorGuard } from './guards/userIsAuthor.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { UserRole } from '../users/dto/user.dto';
 import path = require('path');
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 export const storage = {
   storage: diskStorage({
@@ -53,6 +55,7 @@ export class BlogController {
     return this.blogService.create(user, blogEntry);
   }
 
+
   @Public()
   @Get(':id')
   findBlog(@Param('id') id: number): Observable<BlogEntry> {
@@ -76,8 +79,16 @@ export class BlogController {
 
   @Public()
   @Get()
-  findAllBlogs(): Observable<BlogEntry[]> {
-    return this.blogService.findAll();
+  findAllBlogs(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Observable<Pagination<BlogEntry>> {
+    // limit = limit > 100 ? 100 : limit;
+    return this.blogService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+      route: `${process.env.BASE_URL}/blogs`,
+    });
   }
 
   @Post('image/upload')

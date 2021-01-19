@@ -7,8 +7,13 @@ import { UserDto } from '../../users/dto/user.dto';
 import { BlogEntry } from '../model/blog-entry.interface';
 import { from, Observable, of } from 'rxjs';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 import { CategoriesService } from '../../categories/categories.service';
+import {
+  Pagination,
+  paginate,
+  IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const slugify = require('slugify');
@@ -58,10 +63,18 @@ export class BlogService {
   deleteOne(id: number): Observable<any> {
     return from(this.blogRepository.delete(id));
   }
-  findAll(): Observable<BlogEntry[]> {
+  // findAll(): Observable<BlogEntry[]> {
+  //   return from(
+  //     this.blogRepository.find({ relations: ['author', 'categories'] }),
+  //   );
+  // }
+
+  findAll(options: IPaginationOptions): Observable<Pagination<BlogEntry>> {
     return from(
-      this.blogRepository.find({ relations: ['author', 'categories'] }),
-    );
+      paginate<BlogEntry>(this.blogRepository, options, {
+        relations: ['author', 'categories'],
+      }),
+    ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
   }
 
   generateSlug(title: string): Observable<string> {
