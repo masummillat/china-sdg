@@ -1,21 +1,44 @@
-version: '3.7'
+# version: '3.7'
+
+# services:
+
+#   db:
+#     container_name: chinasdg_db
+#     image: mysql
+#     command: --default-authentication-plugin=mysql_native_password
+#     environment:
+#       MYSQL_ROOT_PASSWORD: 'chinasdg'
+#       MYSQL_USER: 'chinasdg'
+#       MYSQL_PASSWORD: 'chinasdg'
+#       MYSQL_DATABASE: 'chinasdg'
+#     ports:
+#       - 3306:3306
+
+#   adminer:
+#     container_name: chinasdg_adminer
+#     image: adminer
+#     ports:
+#       - 8080:8080
+
+version: '3'
+
+volumes:
+  postgres_data:
+      driver: local
 
 services:
-
-  db:
-    container_name: chinasdg_db
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_ROOT_PASSWORD: 'chinasdg'
-      MYSQL_USER: 'chinasdg'
-      MYSQL_PASSWORD: 'chinasdg'
-      MYSQL_DATABASE: 'chinasdg'
-    ports:
-      - 3306:3306
-
+  postgres:
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: chinasdg
+        POSTGRES_USER: chinasdg
+        POSTGRES_PASSWORD: chinasdg
+      ports:
+        - 5432:5432
   adminer:
     container_name: chinasdg_adminer
     image: adminer
     ports:
-      - 8080:8080
+      - 8080:8080  

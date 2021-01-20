@@ -25,7 +25,7 @@ export class UserEntity {
   @Column({ select: false })
   password: string;
 
-  @Column({ type: 'longtext' })
+  @Column({ type: 'text' })
   bio: string;
 
   @Column({ default: '' })

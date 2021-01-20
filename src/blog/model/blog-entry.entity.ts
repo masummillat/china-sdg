@@ -26,7 +26,7 @@ export class BlogEntryEntity {
   @Column({ default: '' })
   description: string;
 
-  @Column({ type: 'longtext' })
+  @Column({ type: 'text' })
   body: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
