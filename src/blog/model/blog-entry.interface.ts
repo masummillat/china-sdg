@@ -1,3 +1,4 @@
+import { TagEntry } from './../../categories/model/tag.interface';
 import { UserDto } from '../../users/dto/user.dto';
 import { CategoryEntry } from '../../categories/model/category.entry';
 export interface BlogEntry {

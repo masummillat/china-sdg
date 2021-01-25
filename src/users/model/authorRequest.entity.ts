@@ -13,7 +13,7 @@ export class AuthorRequestEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'longtext', nullable: true })
+  @Column({ type: 'text', nullable: true })
   message: string;
 
   @Column({ nullable: false, default: false })

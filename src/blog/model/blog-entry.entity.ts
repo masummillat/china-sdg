@@ -26,7 +26,7 @@ export class BlogEntryEntity {
   @Column({ default: '' })
   description: string;
 
-  @Column({ type: 'longtext' })
+  @Column({ type: 'text' })
   body: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
@@ -46,7 +46,7 @@ export class BlogEntryEntity {
   @Column({ nullable: true })
   featuredImg: string;
 
-  @Column('simple-array', { default: null })
+  @Column('simple-array', { default: [] })
   tags: string[];
 
   @Column({ nullable: true })

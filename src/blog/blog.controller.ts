@@ -47,6 +47,12 @@ export const storage = {
 export class BlogController {
   constructor(private blogService: BlogService) {}
 
+  @Public()
+  @Get('/tags')
+  findAllTags(): Observable<BlogEntry[]> {
+    return this.blogService.findTags();
+  }
+
   @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   @Post()
   create(@Body() blogEntry: BlogEntry, @Request() req): Observable<BlogEntry> {
@@ -54,7 +60,6 @@ export class BlogController {
     const user = req.user;
     return this.blogService.create(user, blogEntry);
   }
-
 
   @Public()
   @Get(':id')
@@ -82,19 +87,27 @@ export class BlogController {
   findAllBlogs(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
+    @Query('tag') tag,
+    @Query('isPublished') isPublished = false,
   ): Observable<Pagination<BlogEntry>> {
-    // limit = limit > 100 ? 100 : limit;
-    return this.blogService.findAll({
-      limit: Number(limit),
-      page: Number(page),
-      route: `${process.env.BASE_URL}/blogs`,
-    });
+    console.log(page);
+    console.log(limit);
+    console.log(tag);
+    return this.blogService.findAll(
+      {
+        limit: Number(limit),
+        page: Number(page),
+        route: `${process.env.BASE_URL}/blogs`,
+      },
+      tag,
+      isPublished,
+    );
   }
 
   @Post('image/upload')
   @UseInterceptors(FileInterceptor('file', storage))
   uploadFile(@UploadedFile() file, @Request() req): Observable<Image> {
-    file.url = `http://localhost:3000/blogs/image/${file.filename}`;
+    file.url = `${process.env.BASE_URL}/image/${file.filename}`;
     return of(file);
   }
 

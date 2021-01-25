@@ -45,7 +45,7 @@ export class UsersController {
 
   @Public()
   @Delete('author-requests/:id')
-  deleteAuthorRequest(@Param('id') id: number): Observable<any>{
+  deleteAuthorRequest(@Param('id') id: number): Observable<any> {
     return this.usersService.deleteAuthorRequest(id);
   }
 
@@ -79,13 +79,17 @@ export class UsersController {
   findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
+    @Query('role') role: string | null = null,
   ): Observable<Pagination<UserDto>> {
     // limit = limit > 100 ? 100 : limit;
-    return this.usersService.findAll({
-      limit: Number(limit),
-      page: Number(page),
-      route: `${process.env.BASE_URL}/users`,
-    });
+    return this.usersService.findAll(
+      {
+        limit: Number(limit),
+        page: Number(page),
+        route: `${process.env.BASE_URL}/users`,
+      },
+      role,
+    );
   }
 
   @Public()
