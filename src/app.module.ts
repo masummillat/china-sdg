@@ -22,6 +22,10 @@ import { CategoriesModule } from './categories/categories.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
+      // port: 5432,
+      // username: 'chinasdg',
+      // password: 'chinasdg',
+      // database: 'chinasdg',
       entities: [UserEntity, BlogEntryEntity, AuthorRequestEntity],
       synchronize: true,
       autoLoadEntities: true,

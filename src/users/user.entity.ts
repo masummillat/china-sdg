@@ -50,6 +50,6 @@ export class UserEntity {
 
   @BeforeInsert()
   createDomain() {
-    this.domain = this.name.toLowerCase();
+    this.domain = this.name.replace(/\s+/g, '').toLowerCase();
   }
 }

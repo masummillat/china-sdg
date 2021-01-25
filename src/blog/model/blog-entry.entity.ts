@@ -46,7 +46,7 @@ export class BlogEntryEntity {
   @Column({ nullable: true })
   featuredImg: string;
 
-  @Column('simple-array', { default: null })
+  @Column('simple-array', { default: [] })
   tags: string[];
 
   @Column({ nullable: true })

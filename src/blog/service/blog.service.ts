@@ -1,5 +1,5 @@
 import { Injectable, UseGuards } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { BlogEntryEntity } from '../model/blog-entry.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../../users/users.service';
@@ -69,10 +69,28 @@ export class BlogService {
   //   );
   // }
 
-  findAll(options: IPaginationOptions): Observable<Pagination<BlogEntry>> {
+  findTags(): Observable<BlogEntry[]> {
+    return from(this.blogRepository.find({ select: ['tags'] }));
+  }
+
+  findAll(
+    options: IPaginationOptions,
+    tag: any,
+    isPublished: boolean,
+  ): Observable<Pagination<BlogEntry>> {
+    if (isPublished) {
+      return from(
+        paginate<BlogEntry>(this.blogRepository, options, {
+          relations: ['author', 'categories'],
+          where: { tags: Like(`%${tag || ''}%`), isPublished: true },
+        }),
+      ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
+    }
+
     return from(
       paginate<BlogEntry>(this.blogRepository, options, {
         relations: ['author', 'categories'],
+        where: { tags: Like(`%${tag || ''}%`) },
       }),
     ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
   }

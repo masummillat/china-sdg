@@ -3,7 +3,7 @@ import { AuthorRequestEntity } from './model/authorRequest.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import jwt_decode from 'jwt-decode';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Equal } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { from, Observable, of, throwError } from 'rxjs';
 import { UserDto, UserRole } from './dto/user.dto';
@@ -100,7 +100,28 @@ export class UsersService {
       }),
     );
   }
-  findAll(options: IPaginationOptions): Observable<Pagination<UserDto>> {
+  findAll(
+    options: IPaginationOptions,
+    role: string | null,
+  ): Observable<Pagination<UserDto>> {
+    console.log(role);
+    if (role) {
+      return from(
+        paginate<UserDto>(this.usersRepository, options, {
+          relations: ['blogs'],
+          where: {
+            role: Equal(`${role}`),
+          },
+        }),
+      ).pipe(
+        map((usersPageable: Pagination<UserDto>) => {
+          usersPageable.items.forEach(function (v) {
+            delete v.password;
+          });
+          return usersPageable;
+        }),
+      );
+    }
     return from(
       paginate<UserDto>(this.usersRepository, options, {
         relations: ['blogs'],
