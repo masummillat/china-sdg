@@ -27,7 +27,7 @@ volumes:
       driver: local
 
 services:
-  postgres:
+  db:
       image: postgres
       volumes:
         - postgres_data:/var/lib/postgresql/data

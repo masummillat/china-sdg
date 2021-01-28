@@ -22,16 +22,16 @@ import { CategoriesModule } from './categories/categories.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      // port: 5432,
-      // username: 'chinasdg',
-      // password: 'chinasdg',
-      // database: 'chinasdg',
+      port: 5432,
+      username: 'chinasdg',
+      password: 'chinasdg',
+      database: 'chinasdg',
       entities: [UserEntity, BlogEntryEntity, AuthorRequestEntity],
       synchronize: true,
       autoLoadEntities: true,
-      ssl: { rejectUnauthorized: false },
-      url:
-        'postgres://uhyfdhlggdazea:b8e0cd14d7b2f129d8def0737fc7049bf01842a2472ebd5046968691cd211235@ec2-52-72-190-41.compute-1.amazonaws.com:5432/dar6naepu6npga',
+      // ssl: { rejectUnauthorized: false },
+      // url:
+      //   'postgres://uhyfdhlggdazea:b8e0cd14d7b2f129d8def0737fc7049bf01842a2472ebd5046968691cd211235@ec2-52-72-190-41.compute-1.amazonaws.com:5432/dar6naepu6npga',
     }),
     CategoriesModule,
   ],
