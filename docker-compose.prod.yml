@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  jinpost-backend:
+    container_name: jinpost-backend
+    build: .
+    ports:
+      - 3001:3000
+    environment:
+      - NODE_ENV=production

@@ -4,8 +4,15 @@ import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
 import { LoggingInterceptor } from './logging.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+dotenv.config({
+  path: path.resolve(__dirname, `../.env.${process.env.NODE_ENV}`),
+});
 
 async function bootstrap() {
+  console.log(path.resolve(__dirname, `../.env.${process.env.NODE_ENV}`))
   const app = await NestFactory.create(AppModule);
   const options = new DocumentBuilder()
     .setTitle('JinPost')
