@@ -13,6 +13,7 @@ dotenv.config({
 
 async function bootstrap() {
   console.log(path.resolve(__dirname, `../.env.${process.env.NODE_ENV}`))
+  console.log(process.env.DATABASE_HOST)
   const app = await NestFactory.create(AppModule);
   const options = new DocumentBuilder()
     .setTitle('JinPost')
