@@ -37,8 +37,8 @@ services:
         POSTGRES_PASSWORD: chinasdg
       ports:
         - 5432:5432
-  # adminer:
-  #   container_name: chinasdg_adminer
-  #   image: adminer
-  #   ports:
-  #     - 8080:8080  
+  adminer:
+    container_name: chinasdg_adminer
+    image: adminer
+    ports:
+      - 8080:8080  

@@ -18,6 +18,7 @@ import { Public } from 'src/auth/guards/jwt-auth.guard';
 import { AuthorRequest } from './dto/authorReques.interface';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bcrypt = require('bcrypt');
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class UsersService {
@@ -247,6 +248,72 @@ export class UsersService {
     // );
   }
 
+  resetPassword(body: UserDto): Observable<any> {
+    return this.hashPassword(body.password).pipe(
+      switchMap((hashPassword: string) => {
+        const newUser = new UserEntity();
+        newUser.password = hashPassword;
+        return from(this.usersRepository.update(body.id, newUser)).pipe(
+          switchMap(() => {
+            return of({
+              message: 'Successfully updated',
+            });
+          }),
+        );
+      }),
+    );
+  }
+  forgotPassword(body: { email: string }): Observable<any> {
+    return this.findByMail(body.email).pipe(
+      switchMap((user: UserDto) => {
+        if (!user) {
+          throw new HttpException(
+            'no user found with this email',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+        return this.generateJwt({
+          name: user.name,
+          role: user.role,
+          id: user.id,
+        }).pipe(
+          switchMap((jwt: string) => {
+            const transport = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: 'masummillat@gmail.com',
+                pass: 'Millat@420',
+              },
+            });
+            const message = {
+              from: 'masummillat@gmail.com', // Sender address
+              to: `${body.email}`, // List of recipients
+              subject: 'Reset password | Jinpost', // Subject li
+              html: `
+              <div> 
+                <h1>Click the link to reset password</h1>
+                ${process.env.FRONTEND_BASE_URL}/reset-password?access_token=${jwt}&id=${user.id}         
+              </div>`,
+            };
+            transport.sendMail(message, function (err, info) {
+              if (err) {
+                console.log(err);
+                return of(err);
+              } else {
+                console.log(info);
+                return of(info);
+              }
+            });
+            return of('a mail has been send to email');
+          }),
+        );
+      }),
+      catchError((_err) => {
+        console.log(_err);
+        throw new HttpException(_err, HttpStatus.NOT_FOUND);
+      }),
+    );
+  }
   getAuthorRequest(id: number): Observable<AuthorRequest> {
     return from(this.authorRequestRepository.findOne(id));
   }

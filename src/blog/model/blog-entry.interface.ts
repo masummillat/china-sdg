@@ -4,9 +4,12 @@ import { CategoryEntry } from '../../categories/model/category.entry';
 export interface BlogEntry {
   id?: number;
   title?: string;
+  chineseTitle?: string;
   slug?: string;
   description?: string;
+  chineseDescription?: string;
   body?: string;
+  chineseBody?: string;
   createdAt?: Date;
   updatedAt?: Date;
   likes?: number;

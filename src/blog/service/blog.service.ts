@@ -15,6 +15,11 @@ import {
   IPaginationOptions,
 } from 'nestjs-typeorm-paginate';
 
+import { S3 } from 'aws-sdk';
+import { Logger } from '@nestjs/common';
+import path = require('path');
+import { v4 as uuidv4 } from 'uuid';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const slugify = require('slugify');
 @Injectable()
@@ -97,5 +102,37 @@ export class BlogService {
 
   generateSlug(title: string): Observable<string> {
     return of(slugify(title));
+  }
+
+  async upload(file: { buffer?: any; originalname?: any }) {
+    const bucketS3 = 'jinpost-bucket/images';
+    const filename: string =
+      path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+    const extension: string = path.parse(file.originalname).ext;
+    return this.uploadS3(file.buffer, bucketS3, `${filename}${extension}`);
+  }
+
+  async uploadS3(file: any, bucket: string, name: any) {
+    const s3 = this.getS3();
+    const params = {
+      Bucket: bucket,
+      Key: String(name),
+      Body: file,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, (err: { message: any }, data: unknown) => {
+        if (err) {
+          Logger.error(err);
+          reject(err.message);
+        }
+        resolve(data);
+      });
+    });
+  }
+  getS3() {
+    return new S3({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
   }
 }

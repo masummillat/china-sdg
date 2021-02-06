@@ -12,6 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { BlogService } from './service/blog.service';
 import { BlogEntry } from './model/blog-entry.interface';
@@ -105,10 +106,9 @@ export class BlogController {
   }
 
   @Post('image/upload')
-  @UseInterceptors(FileInterceptor('file', storage))
-  uploadFile(@UploadedFile() file, @Request() req): Observable<Image> {
-    file.url = `${process.env.BASE_URL}/image/${file.filename}`;
-    return of(file);
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file): Promise<any> {
+    return await this.blogService.upload(file);
   }
 
   @Public()

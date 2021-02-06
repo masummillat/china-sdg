@@ -21,13 +21,22 @@ export class BlogEntryEntity {
   title: string;
 
   @Column()
+  chineseTitle: string;
+
+  @Column()
   slug: string;
 
   @Column({ default: '' })
   description: string;
 
+  @Column({ default: '' })
+  chineseDescription: string;
+
   @Column({ type: 'text' })
   body: string;
+
+  @Column({ type: 'text' })
+  chineseBody: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
