@@ -1,6 +1,7 @@
 import { TagEntry } from './../../categories/model/tag.interface';
 import { UserDto } from '../../users/dto/user.dto';
 import { CategoryEntry } from '../../categories/model/category.entry';
+import { IComment } from '../../comment/model/IComment';
 export interface BlogEntry {
   id?: number;
   title?: string;
@@ -19,4 +20,5 @@ export interface BlogEntry {
   isPublished?: boolean;
   tags?: string[];
   categories?: CategoryEntry[];
+  comments?: IComment[]
 }
