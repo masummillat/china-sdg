@@ -1,30 +1,38 @@
-import { createConnection, Connection, getRepository } from 'typeorm';
+/* eslint-disable */
+import * as path from "path";
+import { createConnection, Connection, getRepository, getConnection } from 'typeorm';
 import { join } from 'path';
-import { UserEntity } from 'src/users/user.entity';
+import { UserEntity } from '../src/modules/users/model/user.entity';
 
 async function main() {
-  console.log('calling')
-  const connection = await createConnection({
-    type: 'mysql',
+  // @ts-ignore
+ await createConnection({
+    type: 'postgres',
     host: 'localhost',
-    port: 3306,
-    username: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE_NAME,
+    port: 5432,
+    username: 'chinasdg',
+    password: 'chinasdg',
+    database: 'chinasdg',
     entities: [UserEntity],
     synchronize: true,
+    autoLoadEntities: true,
     migrations: [join(process.cwd(), 'src/seeds/**/*.seed.js')],
     migrationsRun: true,
     charset: 'utf8mb4',
   });
 
+
+
   const input = {
     email: 'superadmin@jinpost.com',
     password: 'superadmin',
     name: 'superadmin',
+    role: 'admin'
   };
-  const user = getRepository(UserEntity).findOne(1);
-  console.log(user);
+  // connection.connect();
+  // const rep = connection.getRepository(UserEntity);
+  // const existingUser = await rep.findOne({ email: input.email });
+  // console.log(existingUser);
 }
 
 main()

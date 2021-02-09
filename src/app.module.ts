@@ -1,19 +1,19 @@
-import { AuthorRequestEntity } from './users/model/authorRequest.entity';
+import { AuthorRequestEntity } from './modules/users/model/authorRequest.entity';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './users/user.entity';
+import { UserEntity } from './modules/users/model/user.entity';
 import { Connection } from 'typeorm';
-import { AuthModule } from './auth/auth.module';
-import { BlogController } from './blog/blog.controller';
-import { BlogService } from './blog/service/blog.service';
-import { BlogModule } from './blog/blog.module';
-import { BlogEntryEntity } from './blog/model/blog-entry.entity';
-import { CategoriesModule } from './categories/categories.module';
-import { CommentModule } from './comment/comment.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { BlogController } from './modules/blog/blog.controller';
+import { BlogService } from './modules/blog/service/blog.service';
+import { BlogModule } from './modules/blog/blog.module';
+import { BlogEntryEntity } from './modules/blog/model/blog-entry.entity';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
