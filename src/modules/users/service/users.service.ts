@@ -281,8 +281,8 @@ export class UsersService {
             const transport = nodemailer.createTransport({
               service: 'gmail',
               auth: {
-                user: 'masummillat@gmail.com',
-                pass: 'Millat@420',
+                user: 'jinpost2021@gmail.com',
+                pass: 'Longsicong520!',
               },
             });
             const message = {
@@ -297,10 +297,8 @@ export class UsersService {
             };
             transport.sendMail(message, function (err, info) {
               if (err) {
-                console.log(err);
                 return of(err);
               } else {
-                console.log(info);
                 return of(info);
               }
             });
