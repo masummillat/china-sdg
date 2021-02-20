@@ -88,6 +88,9 @@ export class BlogService {
         paginate<BlogEntry>(this.blogRepository, options, {
           relations: ['author', 'categories'],
           where: { tags: Like(`%${tag || ''}%`), isPublished: true },
+          order: {
+            id: 'DESC',
+          },
         }),
       ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
     }
@@ -96,6 +99,9 @@ export class BlogService {
       paginate<BlogEntry>(this.blogRepository, options, {
         relations: ['author', 'categories'],
         where: { tags: Like(`%${tag || ''}%`) },
+        order: {
+          id: 'DESC',
+        },
       }),
     ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
   }

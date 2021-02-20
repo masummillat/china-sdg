@@ -3,7 +3,7 @@ import { BlogService } from '../service/blog.service';
 import { UsersService } from '../../users/service/users.service';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { UserInterface } from '../../users/interface/user.interface';
+import { UserInterface, UserRole } from '../../users/interface/user.interface';
 import { BlogEntry } from '../model/blog-entry.interface';
 
 @Injectable()
@@ -19,6 +19,7 @@ export class UserIsAuthorGuard implements CanActivate {
     const params = request.params;
     const blogEntryId = Number(params.id);
     const user: UserInterface = request.user;
+    console.log(user);
 
     return this.userService.findOne(user.id).pipe(
       switchMap((user: UserInterface) =>
@@ -27,6 +28,9 @@ export class UserIsAuthorGuard implements CanActivate {
             let hasPermission = false;
             if (user.id === blogEntry.author.id) {
               hasPermission = true;
+            }
+            if (user.role === UserRole.ADMIN) {
+              return true;
             }
             return user && hasPermission;
           }),

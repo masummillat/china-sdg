@@ -77,6 +77,7 @@ export class BlogController {
     return this.blogService.updateOne(id, blogEntry);
   }
 
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   @UseGuards(UserIsAuthorGuard)
   @Delete(':id')
   deleteOne(@Param('id') id: number): Observable<any> {
