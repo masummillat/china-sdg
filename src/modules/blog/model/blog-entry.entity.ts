@@ -14,6 +14,7 @@ import { CategoryEntry } from '../../categories/interface/category.entry';
 import { UserInterface } from '../../users/interface/user.interface';
 import { IComment } from '../../comment/interface/IComment';
 import { CommentEntity } from '../../comment/model/comment.entity';
+import { BlogType } from './blog-entry.interface';
 
 @Entity('blog')
 export class BlogEntryEntity {
@@ -40,6 +41,12 @@ export class BlogEntryEntity {
 
   @Column({ type: 'text', default: '' })
   chineseBody: string;
+
+  @Column({ default: 'user' })
+  type: BlogType;
+
+  @Column({ default: '' })
+  note: string;
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

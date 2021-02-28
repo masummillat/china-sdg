@@ -9,13 +9,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserInterface } from '../../users/interface/user.interface';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthService } from '../service/auth.service';
 import { UsersService } from '../../users/service/users.service';
 import { UserEntity } from '../../users/model/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import * as nodemailer from 'nodemailer';
 
 @Controller('auth')
 export class AuthController {
@@ -39,6 +40,18 @@ export class AuthController {
     );
   }
 
+  @Post('add-team-member')
+  addTeamMember(@Body() userData: UserInterface): Observable<any> {
+    return this.usersService.create(userData).pipe(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      map((user: UserInterface) => user),
+      catchError((err) => {
+        console.log(err.message);
+        throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
+      }),
+    );
+  }
   @Post('forgot-password')
   forgotPassword(@Body() body: any): Observable<any> {
     return this.usersService.forgotPassword(body);

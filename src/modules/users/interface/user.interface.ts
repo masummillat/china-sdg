@@ -6,6 +6,7 @@ export interface UserInterface {
   domain?: string;
   email?: string;
   password?: string;
+  type?: string;
   bio?: string;
   occupation?: string;
   role?: UserRole;
@@ -20,4 +21,5 @@ export enum UserRole {
   AUTHOR = 'author',
   USER = 'user',
   MANAGER = 'manager',
+  VIEWER = 'viewer',
 }

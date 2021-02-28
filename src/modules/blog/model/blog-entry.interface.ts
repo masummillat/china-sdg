@@ -2,6 +2,12 @@ import { TagEntry } from '../../categories/model/tag.interface';
 import { UserInterface } from '../../users/interface/user.interface';
 import { CategoryEntry } from '../../categories/interface/category.entry';
 import { IComment } from '../../comment/interface/IComment';
+
+export enum BlogType {
+  FREE = 'free',
+  PREMIUM = 'premium',
+}
+
 export interface BlogEntry {
   id?: number;
   title?: string;
@@ -11,6 +17,7 @@ export interface BlogEntry {
   chineseDescription?: string;
   body?: string;
   chineseBody?: string;
+  type?: BlogType;
   createdAt?: Date;
   updatedAt?: Date;
   likes?: number;
@@ -21,4 +28,5 @@ export interface BlogEntry {
   tags?: string[];
   categories?: CategoryEntry[];
   comments?: IComment[];
+  note?: string;
 }

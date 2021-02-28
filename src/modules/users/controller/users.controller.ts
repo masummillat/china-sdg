@@ -80,6 +80,7 @@ export class UsersController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('role') role: string | null = null,
+    @Query('type') type: string | null = null,
   ): Observable<Pagination<UserInterface>> {
     // limit = limit > 100 ? 100 : limit;
     return this.usersService.findAll(
@@ -89,6 +90,7 @@ export class UsersController {
         route: `${process.env.BASE_URL}/users`,
       },
       role,
+      type,
     );
   }
 

@@ -14,6 +14,11 @@ import { BlogModule } from './modules/blog/blog.module';
 import { BlogEntryEntity } from './modules/blog/model/blog-entry.entity';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { SubscriptionController } from './modules/subscription/controller/subscription.controller';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { PlanService } from './modules/plan/service/plan.service';
+import { PlanController } from './modules/plan/controller/plan.controller';
+import { PlanModule } from './modules/plan/plan.module';
 
 @Module({
   imports: [
@@ -34,6 +39,8 @@ import { CommentModule } from './modules/comment/comment.module';
     }),
     CategoriesModule,
     CommentModule,
+    SubscriptionModule,
+    PlanModule,
   ],
   controllers: [AppController],
   providers: [AppService],

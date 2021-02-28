@@ -33,6 +33,7 @@ export class UsersService {
   hashPassword(password: string): Observable<string> {
     return from<string>(bcrypt.hash(password, 12));
   }
+
   comparePassword(newPassword: string, passwordHash: string): Observable<any> {
     console.log(bcrypt.compare(newPassword, passwordHash));
     return from<any | boolean>(bcrypt.compare(newPassword, passwordHash));
@@ -41,6 +42,7 @@ export class UsersService {
   generateJwt(user: UserInterface): Observable<string> {
     return from(this.jwtService.signAsync(user));
   }
+
   validateUser(email: string, password: string): Observable<any> {
     return from(
       this.usersRepository.findOne(
@@ -77,21 +79,54 @@ export class UsersService {
       ),
     );
   }
-  create(user: UserEntity): Observable<any> {
-    return this.hashPassword(user.password).pipe(
+
+  create(userData: UserInterface): Observable<any> {
+    console.log(userData);
+    return this.hashPassword(userData.password).pipe(
       switchMap((passwordHash: string) => {
         const newUser = new UserEntity();
-        newUser.name = user.name;
+        newUser.name = userData.name;
         // newUser.username = user.username;
-        newUser.email = user.email;
+        newUser.email = userData.email;
         newUser.password = passwordHash;
-        // newUser.role = UserRole.ADMIN;
         newUser.bio = '';
+        if (userData.type === 'team') {
+          newUser.type = userData.type;
+          newUser.role = userData.role;
+        }
 
         return from(this.usersRepository.save(newUser)).pipe(
           map(
             (user: UserInterface) => {
-              console.log(user);
+              if (user.type === 'team') {
+                const transport = nodemailer.createTransport({
+                  service: 'gmail',
+                  auth: {
+                    user: 'jinpost2021@gmail.com',
+                    pass: 'Longsicong520!',
+                  },
+                });
+                const message = {
+                  from: 'jinpost2021@gmail.com', // Sender address
+                  to: `${userData.email}`, // List of recipients
+                  subject: 'Team member | Jinpost', // Subject li
+                  html: `
+                  <div> 
+                    <h1>You have been added as a team member. </h1>
+                    <p>Your login credentials and role  are below</p>
+                    <p><strong>Email: </strong> ${userData.email}   </p>         
+                    <p><strong>Password: </strong> ${userData.password}</p>         
+                    <p><strong>Role: </strong> ${userData.role}</p>         
+                  </div>`,
+                };
+                transport.sendMail(message, function (err, info) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log(info);
+                  }
+                });
+              }
               const { password, ...result } = user;
               return result;
             },
@@ -101,11 +136,31 @@ export class UsersService {
       }),
     );
   }
+
   findAll(
     options: IPaginationOptions,
     role: string | null,
+    type: string | null,
   ): Observable<Pagination<UserInterface>> {
     console.log(role);
+    console.log(type);
+    if (type) {
+      return from(
+        paginate<UserInterface>(this.usersRepository, options, {
+          relations: ['blogs'],
+          where: {
+            type: Equal(`${type}`),
+          },
+        }),
+      ).pipe(
+        map((usersPageable: Pagination<UserInterface>) => {
+          usersPageable.items.forEach(function (v) {
+            delete v.password;
+          });
+          return usersPageable;
+        }),
+      );
+    }
     if (role) {
       return from(
         paginate<UserInterface>(this.usersRepository, options, {
@@ -182,9 +237,11 @@ export class UsersService {
       }),
     );
   }
+
   deleteOne(id: string): Observable<any> {
     return from(this.usersRepository.delete(id));
   }
+
   findByMail(email: string): Observable<UserInterface> {
     return from(this.usersRepository.findOne({ email }));
   }
@@ -263,6 +320,7 @@ export class UsersService {
       }),
     );
   }
+
   forgotPassword(body: { email: string }): Observable<any> {
     return this.findByMail(body.email).pipe(
       switchMap((user: UserInterface) => {
@@ -312,9 +370,11 @@ export class UsersService {
       }),
     );
   }
+
   getAuthorRequest(id: number): Observable<AuthorRequest> {
     return from(this.authorRequestRepository.findOne(id));
   }
+
   getAuthorRequests(): Observable<any> {
     return from(
       this.authorRequestRepository.find({
@@ -323,6 +383,7 @@ export class UsersService {
       }),
     );
   }
+
   createAuthorRequest(
     user: UserInterface,
     authorRequest: AuthorRequest,
