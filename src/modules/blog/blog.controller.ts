@@ -90,11 +90,9 @@ export class BlogController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('tag') tag,
+    @Query('q') q,
     @Query('isPublished') isPublished = false,
   ): Observable<Pagination<BlogEntry>> {
-    console.log(page);
-    console.log(limit);
-    console.log(tag);
     return this.blogService.findAll(
       {
         limit: Number(limit),
@@ -103,6 +101,7 @@ export class BlogController {
       },
       tag,
       isPublished,
+      q,
     );
   }
 

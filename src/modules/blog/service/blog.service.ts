@@ -82,8 +82,21 @@ export class BlogService {
     options: IPaginationOptions,
     tag: any,
     isPublished: boolean,
+    q: string,
   ): Observable<Pagination<BlogEntry>> {
     if (isPublished) {
+      if (q.length > 0) {
+        console.log(q)
+        return from(
+          paginate<BlogEntry>(this.blogRepository, options, {
+            relations: ['author', 'categories'],
+            where: { body: Like(`%${q || ''}%`), isPublished: true },
+            order: {
+              id: 'DESC',
+            },
+          }),
+        ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
+      }
       return from(
         paginate<BlogEntry>(this.blogRepository, options, {
           relations: ['author', 'categories'],
