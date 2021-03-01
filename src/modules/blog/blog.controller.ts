@@ -90,7 +90,7 @@ export class BlogController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('tag') tag,
-    @Query('q') q,
+    @Query('q') q = '',
     @Query('isPublished') isPublished = false,
   ): Observable<Pagination<BlogEntry>> {
     return this.blogService.findAll(
