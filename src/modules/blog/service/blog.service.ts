@@ -1,5 +1,5 @@
 import { Injectable, UseGuards } from '@nestjs/common';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, Raw } from 'typeorm';
 import { BlogEntryEntity } from '../model/blog-entry.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../../users/service/users.service';
@@ -86,11 +86,16 @@ export class BlogService {
   ): Observable<Pagination<BlogEntry>> {
     if (isPublished) {
       if (q.length > 0) {
-        console.log(q)
         return from(
           paginate<BlogEntry>(this.blogRepository, options, {
             relations: ['author', 'categories'],
-            where: { body: Like(`%${q || ''}%`), isPublished: true },
+            where: {
+              body: Raw(
+                (alias) =>
+                  `LOWER(${alias}) Like '%${q.toString().toLowerCase()}%'`,
+              ),
+              isPublished: true,
+            },
             order: {
               id: 'DESC',
             },

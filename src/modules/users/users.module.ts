@@ -15,7 +15,7 @@ import { AuthorRequestEntity } from './model/authorRequest.entity';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3600s' },
+      signOptions: { expiresIn: '2 days' },
     }),
   ],
   providers: [UsersService, JwtStrategy],
