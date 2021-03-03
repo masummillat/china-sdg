@@ -1,5 +1,5 @@
 import { Injectable, UseGuards } from '@nestjs/common';
-import { Repository, Like, Raw } from 'typeorm';
+import { Repository, Like, Raw, MoreThan, LessThan } from 'typeorm';
 import { BlogEntryEntity } from '../model/blog-entry.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../../users/service/users.service';
@@ -19,6 +19,7 @@ import { S3 } from 'aws-sdk';
 import { Logger } from '@nestjs/common';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
+import { Cron } from '@nestjs/schedule';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const slugify = require('slugify');
@@ -30,6 +31,26 @@ export class BlogService {
     private usersService: UsersService,
     private categoriesService: CategoriesService,
   ) {}
+
+  @Cron('0 */5 * * * *')
+  handleCron() {
+    this.blogRepository
+      .find({
+        where: {
+          publishedDate: LessThan(new Date()),
+        },
+      })
+      .then((res) => {
+        res.map((blog) => {
+          if (!blog.isPublished) {
+            let newBlog = new BlogEntryEntity();
+            newBlog = blog;
+            newBlog.isPublished = true;
+            this.blogRepository.save(newBlog).then((r) => console.log(r));
+          }
+        });
+      });
+  }
 
   @UseGuards(JwtAuthGuard)
   create(user: UserInterface, blogEntry: BlogEntry): Observable<BlogEntry> {

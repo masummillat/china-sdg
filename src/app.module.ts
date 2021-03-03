@@ -19,12 +19,13 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { PlanService } from './modules/plan/service/plan.service';
 import { PlanController } from './modules/plan/controller/plan.controller';
 import { PlanModule } from './modules/plan/plan.module';
-
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     BlogModule,
     UsersModule,
     AuthModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',

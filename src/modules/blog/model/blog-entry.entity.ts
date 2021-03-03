@@ -68,7 +68,7 @@ export class BlogEntryEntity {
   @Column('simple-array', { default: [] })
   tags: string[];
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   publishedDate: Date;
 
   @Column({ nullable: false, default: false })
