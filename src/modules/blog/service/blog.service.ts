@@ -105,7 +105,7 @@ export class BlogService {
     q: string,
     subscription: boolean,
   ): Observable<Pagination<BlogEntry>> {
-    if (JSON.parse(String(subscription))) {
+    if (Boolean(JSON.parse(String(subscription)))) {
       if (isPublished) {
         if (q.length > 0) {
           return from(
