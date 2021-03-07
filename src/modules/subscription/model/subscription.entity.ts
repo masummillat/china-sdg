@@ -18,4 +18,10 @@ export class SubscriptionEntity extends BaseEntity {
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   subscriptionEnd: Date;
+
+  @Column({
+    type: 'jsonb',
+    default: {},
+  })
+  public transactionInfo: any;
 }

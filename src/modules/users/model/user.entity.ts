@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { UserRole } from '../interface/user.interface';
 import { BlogEntryEntity } from '../../blog/model/blog-entry.entity';
+import { SubscriptionEntity } from '../../subscription/model/subscription.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -51,6 +52,12 @@ export class UserEntity {
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @OneToMany(
+    (type) => SubscriptionEntity,
+    (subscriptionEntity) => subscriptionEntity.author,
+  )
+  subscriptions: SubscriptionEntity[];
 
   @BeforeInsert()
   emailToLowerCase() {

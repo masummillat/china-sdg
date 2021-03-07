@@ -10,14 +10,26 @@ export class AuthService {
   login(user: UserInterface): Observable<any> {
     return this.usersService.validateUser(user.email, user.password).pipe(
       switchMap((user: UserInterface) => {
+        const subscription =
+          user.subscriptions[user.subscriptions.length - 1] || null;
         if (user) {
-          return this.usersService.generateJwt(user).pipe(
-            map((jwt) => {
-              return {
-                access_token: jwt,
-              };
-            }),
-          );
+          return this.usersService
+            .generateJwt({
+              ...user,
+              subscriptions: subscription
+                ? {
+                    subscriptionStart: subscription.subscriptionStart,
+                    subscriptionEnd: subscription.subscriptionEnd,
+                  }
+                : null,
+            })
+            .pipe(
+              map((jwt) => {
+                return {
+                  access_token: jwt,
+                };
+              }),
+            );
         }
       }),
     );

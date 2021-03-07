@@ -1,25 +1,24 @@
-import { Injectable, UseGuards } from '@nestjs/common';
-import { Repository, Like, Raw, MoreThan, LessThan } from 'typeorm';
+import { Injectable, Logger, UseGuards } from '@nestjs/common';
+import { LessThan, Like, Raw, Repository } from 'typeorm';
 import { BlogEntryEntity } from '../model/blog-entry.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../../users/service/users.service';
 import { UserInterface } from '../../users/interface/user.interface';
-import { BlogEntry } from '../model/blog-entry.interface';
+import { BlogEntry, BlogType } from '../model/blog-entry.interface';
 import { from, Observable, of } from 'rxjs';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { switchMap, map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { CategoriesService } from '../../categories/service/categories.service';
 import {
-  Pagination,
-  paginate,
   IPaginationOptions,
+  paginate,
+  Pagination,
 } from 'nestjs-typeorm-paginate';
 
 import { S3 } from 'aws-sdk';
-import { Logger } from '@nestjs/common';
-import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
+import path = require('path');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const slugify = require('slugify');
@@ -104,17 +103,32 @@ export class BlogService {
     tag: any,
     isPublished: boolean,
     q: string,
+    subscription: boolean,
   ): Observable<Pagination<BlogEntry>> {
-    if (isPublished) {
-      if (q.length > 0) {
+    if (JSON.parse(String(subscription))) {
+      if (isPublished) {
+        if (q.length > 0) {
+          return from(
+            paginate<BlogEntry>(this.blogRepository, options, {
+              relations: ['author', 'categories'],
+              where: {
+                body: Raw(
+                  (alias) =>
+                    `LOWER(${alias}) Like '%${q.toString().toLowerCase()}%'`,
+                ),
+                isPublished: true,
+              },
+              order: {
+                id: 'DESC',
+              },
+            }),
+          ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
+        }
         return from(
           paginate<BlogEntry>(this.blogRepository, options, {
             relations: ['author', 'categories'],
             where: {
-              body: Raw(
-                (alias) =>
-                  `LOWER(${alias}) Like '%${q.toString().toLowerCase()}%'`,
-              ),
+              tags: Like(`%${tag || ''}%`),
               isPublished: true,
             },
             order: {
@@ -122,22 +136,51 @@ export class BlogService {
             },
           }),
         ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
+      } else {
+        if (isPublished) {
+          if (q.length > 0) {
+            return from(
+              paginate<BlogEntry>(this.blogRepository, options, {
+                relations: ['author', 'categories'],
+                where: {
+                  body: Raw(
+                    (alias) =>
+                      `LOWER(${alias}) Like '%${q.toString().toLowerCase()}%'`,
+                  ),
+                  isPublished: true,
+                  type: BlogType.FREE,
+                },
+                order: {
+                  id: 'DESC',
+                },
+              }),
+            ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
+          }
+          return from(
+            paginate<BlogEntry>(this.blogRepository, options, {
+              relations: ['author', 'categories'],
+              where: {
+                tags: Like(`%${tag || ''}%`),
+                isPublished: true,
+                type: BlogType.FREE,
+              },
+              order: {
+                id: 'DESC',
+              },
+            }),
+          ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
+        }
       }
-      return from(
-        paginate<BlogEntry>(this.blogRepository, options, {
-          relations: ['author', 'categories'],
-          where: { tags: Like(`%${tag || ''}%`), isPublished: true },
-          order: {
-            id: 'DESC',
-          },
-        }),
-      ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
     }
-
+    console.log('getting this');
     return from(
       paginate<BlogEntry>(this.blogRepository, options, {
         relations: ['author', 'categories'],
-        where: { tags: Like(`%${tag || ''}%`) },
+        where: {
+          tags: Like(`%${tag || ''}%`),
+          type: BlogType.FREE,
+          isPublished: true,
+        },
         order: {
           id: 'DESC',
         },

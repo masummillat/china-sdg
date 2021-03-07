@@ -14,6 +14,7 @@ export interface UserInterface {
   blogs?: BlogEntry[];
   createdAt?: Date;
   updatedAt?: Date;
+  subscriptions?: any | null;
 }
 
 export enum UserRole {

@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
   Query,
-  Logger,
+  Logger, Req,
 } from '@nestjs/common';
 import { BlogService } from './service/blog.service';
 import { BlogEntry } from './model/blog-entry.interface';
@@ -67,6 +67,7 @@ export class BlogController {
   findBlog(@Param('id') id: number): Observable<BlogEntry> {
     return this.blogService.findOne(id);
   }
+
   @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   @UseGuards(UserIsAuthorGuard)
   @Put(':id')
@@ -92,6 +93,7 @@ export class BlogController {
     @Query('tag') tag,
     @Query('q') q = '',
     @Query('isPublished') isPublished = false,
+    @Query('subscription') subscription = false,
   ): Observable<Pagination<BlogEntry>> {
     return this.blogService.findAll(
       {
@@ -102,6 +104,7 @@ export class BlogController {
       tag,
       isPublished,
       q,
+      subscription,
     );
   }
 

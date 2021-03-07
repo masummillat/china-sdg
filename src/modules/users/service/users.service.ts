@@ -49,6 +49,7 @@ export class UsersService {
         { email },
         {
           select: ['id', 'password', 'email', 'name', 'role'],
+          relations: ['subscriptions'],
         },
       ),
     ).pipe(
@@ -57,7 +58,6 @@ export class UsersService {
           if (user) {
             return this.comparePassword(password, user.password).pipe(
               map((match: boolean) => {
-                console.log('match => ' + match);
                 if (match) {
                   const { password, ...result } = user;
                   return result;
@@ -194,7 +194,9 @@ export class UsersService {
 
   findOne(id: number): Observable<UserInterface | HttpException> {
     return from(
-      this.usersRepository.findOne(id, { relations: ['blogs'] }),
+      this.usersRepository.findOne(id, {
+        relations: ['blogs', 'subscriptions'],
+      }),
     ).pipe(
       map((user: UserInterface) => {
         if (user) {

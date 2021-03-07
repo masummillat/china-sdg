@@ -31,10 +31,9 @@ export class SubscriptionService {
     return from(this.subscriptionRepository.findOne(id));
   }
 
-  create(user: UserInterface, body: SubscriptionInterface): Observable<any> {
-    return of(body);
-    // body.author = user;
-    // return from(this.subscriptionRepository.save(body));
+  create(user: UserInterface, body: SubscriptionInterface): Observable<any> {;
+    body.author = user;
+    return from(this.subscriptionRepository.save(body));
   }
 
   createPayment(@Body() body) {

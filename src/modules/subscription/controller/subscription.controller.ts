@@ -9,9 +9,11 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { SubscriptionService } from '../service/subscription.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { SubscriptionEntity } from '../model/subscription.entity';
+import moment from 'moment';
 
 @UseGuards(JwtAuthGuard)
 @Controller('subscriptions')
@@ -30,7 +32,15 @@ export class SubscriptionController {
   @Post()
   create(@Body() body: any, @Request() req): Observable<any> {
     const user = req.user;
-    return this.subscriptionService.create(user, body);
+    console.log(body);
+    let newSubscription = new SubscriptionEntity();
+    newSubscription = body;
+    const date = new Date();
+    newSubscription.subscriptionEnd = new Date(
+      date.setMonth(date.getMonth() + Number(body.plan.month)),
+    );
+    console.log(newSubscription)
+    return this.subscriptionService.create(user, newSubscription);
   }
 
   @Put(':id')
