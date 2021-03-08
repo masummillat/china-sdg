@@ -35,7 +35,7 @@ export class CategoriesController {
 
   @Public()
   @Get(':id')
-  findOne(@Param() id: number): Observable<CategoryEntry> {
+  findOne(@Param() id: number): Observable<any> {
     return this.categoriesService.findOne(id);
   }
 

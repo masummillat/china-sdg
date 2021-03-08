@@ -105,6 +105,8 @@ export class BlogService {
     q: string,
     subscription: boolean,
   ): Observable<Pagination<BlogEntry>> {
+    console.log('==================');
+    console.log(subscription);
     if (Boolean(JSON.parse(String(subscription)))) {
       if (isPublished) {
         if (q.length > 0) {
@@ -137,30 +139,15 @@ export class BlogService {
           }),
         ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
       } else {
-        if (isPublished) {
-          if (q.length > 0) {
-            return from(
-              paginate<BlogEntry>(this.blogRepository, options, {
-                relations: ['author', 'categories'],
-                where: {
-                  body: Raw(
-                    (alias) =>
-                      `LOWER(${alias}) Like '%${q.toString().toLowerCase()}%'`,
-                  ),
-                  isPublished: true,
-                  type: BlogType.FREE,
-                },
-                order: {
-                  id: 'DESC',
-                },
-              }),
-            ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
-          }
+        if (q.length > 0) {
           return from(
             paginate<BlogEntry>(this.blogRepository, options, {
               relations: ['author', 'categories'],
               where: {
-                tags: Like(`%${tag || ''}%`),
+                body: Raw(
+                  (alias) =>
+                    `LOWER(${alias}) Like '%${q.toString().toLowerCase()}%'`,
+                ),
                 isPublished: true,
                 type: BlogType.FREE,
               },
@@ -170,9 +157,22 @@ export class BlogService {
             }),
           ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
         }
+        return from(
+          paginate<BlogEntry>(this.blogRepository, options, {
+            relations: ['author', 'categories'],
+            where: {
+              tags: Like(`%${tag || ''}%`),
+              isPublished: true,
+              // type: BlogType.FREE,
+            },
+            order: {
+              id: 'DESC',
+            },
+          }),
+        ).pipe(map((blogEntries: Pagination<BlogEntry>) => blogEntries));
       }
     }
-    console.log('getting this');
+
     return from(
       paginate<BlogEntry>(this.blogRepository, options, {
         relations: ['author', 'categories'],

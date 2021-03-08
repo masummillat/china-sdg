@@ -42,7 +42,7 @@ export class BlogEntryEntity {
   @Column({ type: 'text', default: '' })
   chineseBody: string;
 
-  @Column({ default: 'user' })
+  @Column({ default: 'free' })
   type: BlogType;
 
   @Column({ default: '' })
