@@ -93,7 +93,6 @@ export class BlogController {
     @Query('tag') tag,
     @Query('q') q = '',
     @Query('isPublished') isPublished = false,
-    @Query('subscription') subscription = false,
   ): Observable<Pagination<BlogEntry>> {
     return this.blogService.findAll(
       {
@@ -104,7 +103,6 @@ export class BlogController {
       tag,
       isPublished,
       q,
-      subscription,
     );
   }
 
